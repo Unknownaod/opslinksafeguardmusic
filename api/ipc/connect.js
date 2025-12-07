@@ -1,29 +1,36 @@
 export default async function handler(req, res) {
-  const auth = req.headers["authorization"]; // MUST be brackets
+  const authHeader = req.headers.authorization;
 
-  if (!auth) {
+  // Require Authorization header
+  if (!authHeader) {
     return res.status(403).json({
-      error: "Missing Authorization header"
+      success: false,
+      message: "Missing Authorization header"
     });
   }
 
-  // Expect: Authorization: Bearer opslink
-  if (!auth.startsWith("Bearer ")) {
+  // Expect format: Bearer opslink
+  if (!authHeader.startsWith("Bearer ")) {
     return res.status(403).json({
-      error: "Invalid Authorization format"
+      success: false,
+      message: "Invalid Authorization format"
     });
   }
 
-  const token = auth.replace("Bearer ", "").trim();
+  // Extract the password
+  const token = authHeader.split(" ")[1];
 
+  // Compare token
   if (token !== "opslink") {
     return res.status(403).json({
-      error: "Invalid password"
+      success: false,
+      message: "Invalid password"
     });
   }
 
+  // Success — no User-Id, no extra checks
   return res.status(200).json({
     success: true,
-    message: "IPC connected"
+    message: "Authenticated"
   });
 }
