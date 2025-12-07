@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   const version = req.headers["bot-version"];
 
   // Password must match
-  if (auth !== "LETMEIN123") {
+  if (auth !== "opslink") {
     return res.status(403).json({ success: false, message: "Invalid password" });
   }
 
