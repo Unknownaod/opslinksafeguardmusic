@@ -1,32 +1,27 @@
-import { WebSocketServer } from "ws";
-
-const wss = new WebSocketServer({ noServer: true });
-
-export function setupIPC(server) {
-  server.on("upgrade", (req, socket, head) => {
-    // Accept only WebSocket upgrades on /ws_bot
-    if (req.url !== "/ws_bot") return socket.destroy();
-
+export default async function handler(req, res) {
+  try {
+    // Extract Authorization header and remove "Bearer "
     const auth = req.headers.authorization?.replace("Bearer ", "");
 
-    // Only check password from bot
+    // Validate only the password
     if (auth !== "opslink") {
-      socket.write("HTTP/1.1 403 Forbidden\r\n\r\n");
-      socket.destroy();
-      return;
+      return res.status(403).json({
+        success: false,
+        message: "Invalid password"
+      });
     }
 
-    // Auth OK → upgrade socket
-    wss.handleUpgrade(req, socket, head, (ws) => {
-      ws.send(JSON.stringify({
-        success: true,
-        message: "SafeGuard IPC Connected"
-      }));
-
-      ws.on("message", (data) => {
-        // Handle incoming messages here
-        console.log("IPC Message:", data.toString());
-      });
+    // Success response
+    return res.status(200).json({
+      success: true,
+      message: "SafeGuard Music dashboard connection established"
     });
-  });
+
+  } catch (err) {
+    console.error("[IPC ERROR]", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal IPC error"
+    });
+  }
 }
