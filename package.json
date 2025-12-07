@@ -1,0 +1,11 @@
+{
+  "name": "opslinksafeguardmusic",
+  "version": "1.0.0",
+  "description": "SafeGuard Music Dashboard API for bot connection",
+  "main": "api/ipc/connect.js",
+  "type": "module",
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "dependencies": {}
+}
